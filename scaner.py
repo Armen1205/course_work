@@ -166,11 +166,6 @@ def main():
                 elif my_mas[b][1:] == 't' or my_mas[b][1:] == '-PT':
                     my_flags['t'] = b
 
-        print(my_flags)
-
-
-
-
 
 
         if [my_flags['o']]:

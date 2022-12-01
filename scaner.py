@@ -1,6 +1,8 @@
+from ast import Try
 from base64 import encode
 from ctypes import sizeof
 import requests
+import re
 
 def exploit_confluence_CVE_2022_26134(URL):
     url1 = URL
@@ -129,9 +131,14 @@ def main():
     flag = True;
     while(flag):
         my_task = input()
+        #if re.search(regex, my_task):
+        #    print('incorrect input')
+        #    continue   
         if my_task == '':
             continue
+        
         my_flags = {'sc':0,
+                    'u': 0,
                     'se':0,
                     'rc':0,
                     're':0,
@@ -165,7 +172,9 @@ def main():
                     my_flags['i'] = b
                 elif my_mas[b][1:] == 't' or my_mas[b][1:] == '-PT':
                     my_flags['t'] = b
-        print(my_flags)
+                else:
+                    print("incorrect input\nWrite -h or --Help to see flags")
+                    continue
 
 
 
@@ -182,8 +191,10 @@ def main():
             except OSError:
                 print("No such file or directory")
                 continue
-        else:
+        elif my_flags['u'] != 0:
             URL = my_mas[my_flags['u'] - 1]
+            if URL[:7]!= "http://":
+                URL = "http://" + URL
         if my_flags['sc'] != 0:
             if my_flags['i'] != 0:
                 for URL in f_r:
